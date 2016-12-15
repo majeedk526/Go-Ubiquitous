@@ -268,8 +268,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                     : String.format("%d:%02d", mCalendar.get(Calendar.HOUR),
                     mCalendar.get(Calendar.MINUTE), mCalendar.get(Calendar.SECOND));
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
-            canvas.drawText(Utility.getDayString(System.currentTimeMillis()) + ",", mXOffset-20, mYOffset+20, mTextPaintThin);
-            canvas.drawText(Utility.getDayString(System.currentTimeMillis()), mXOffset+10, mYOffset+20, mTextPaintThin);
+            canvas.drawText(Utility.getDayString(System.currentTimeMillis()) + ", ", mXOffset-40, mYOffset+35, mTextPaintThin);
+            canvas.drawText(Utility.getDateString(System.currentTimeMillis()), mXOffset+20, mYOffset+35, mTextPaintThin);
         }
 
         /**

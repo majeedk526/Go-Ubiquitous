@@ -37,4 +37,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:10.0.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.google.android.gms:play-services-wearable:10.0.0'
+    compile 'com.google.android.gms:play-services-places:10.0.0'
 }

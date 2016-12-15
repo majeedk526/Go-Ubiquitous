@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             }
             mLocation = location;
         }
+
+        startService(new Intent(SendMessaageService.WEAR_ACTION));
     }
 
     @Override
