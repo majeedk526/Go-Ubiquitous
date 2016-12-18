@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -15,6 +17,7 @@ import com.example.android.sunshine.app.data.WeatherContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
@@ -23,6 +26,8 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * Created by Majeed on 13-12-2016.
  */
@@ -30,7 +35,7 @@ import com.google.android.gms.wearable.Wearable;
 public class SendMessaageService extends IntentService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     GoogleApiClient mGoogleApiClient;
-    private static final String TAG = SendMessaageService.class.getName();
+    private static final String TAG = "WearTest";
 
     public static String WEAR_ACTION = "com.example.android.sunshine.app.SEND_TO_WEARABLE";
 
@@ -40,6 +45,8 @@ public class SendMessaageService extends IntentService implements GoogleApiClien
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        Log.d(TAG, "in sendMessage Service");
 
         if(intent.getAction().equals(WEAR_ACTION)){
 
@@ -51,28 +58,42 @@ public class SendMessaageService extends IntentService implements GoogleApiClien
 
             mGoogleApiClient.connect();
         }
+    }
+
+    private Asset createAssetFromBitmap(Bitmap bitmap){
 
 
+
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100,byteStream);
+        return Asset.createFromBytes(byteStream.toByteArray());
 
     }
 
     private void sendMessage(int id, String max, String min){
 
-            PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/step-counter");
+            PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/wear-data");
 
             putDataMapRequest.getDataMap().putString("max", max);
             putDataMapRequest.getDataMap().putString("min", min);
+
+            Bitmap bitmap = Bitmap.createScaledBitmap(
+                    BitmapFactory.decodeResource(getResources(),Utility.getArtResourceForWeatherCondition(id))
+                    ,100,100,true );
+            putDataMapRequest.getDataMap().putAsset("image", createAssetFromBitmap(bitmap));
+            putDataMapRequest.getDataMap().putInt("id", id);
+            putDataMapRequest.getDataMap().putLong("time", System.currentTimeMillis());
 
             PutDataRequest putDataRequest = putDataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(mGoogleApiClient,putDataRequest)
                     .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
                         @Override
                         public void onResult(@NonNull DataApi.DataItemResult dataItemResult) {
-                            if(!dataItemResult.getStatus().isSuccess()){
-                                Log.d(TAG, "step count not stored locally successfully");
+                            if(dataItemResult.getStatus().isSuccess()){
+                                Log.d(TAG, "weather data stored successfully");
                             }
                             else {
-                                Log.d(TAG, "step count stored locally successfully");
+                                Log.d(TAG, "could not store weather data.");
                             }
                         }
                     });
@@ -108,17 +129,17 @@ public class SendMessaageService extends IntentService implements GoogleApiClien
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d(TAG, "connection suspended " + i);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.d(TAG, "connection failed : " + connectionResult.getErrorMessage() + " " + connectionResult.getErrorCode());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mGoogleApiClient.disconnect();
+       // mGoogleApiClient.disconnect();
     }
 }
