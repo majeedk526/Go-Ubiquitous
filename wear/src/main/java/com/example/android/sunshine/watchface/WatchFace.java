@@ -121,8 +121,11 @@ public class WatchFace extends CanvasWatchFaceService {
         float mXOffset;
         float mYOffset;
 
-        String mMax = "", mMin ="";
-        Bitmap mBitmap = null;
+        String mMax = "17" + "\u00b0", mMin ="2" + "\u00b0"; // default values
+        Bitmap mBitmap = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(getResources(), R.drawable.art_clear), /* default drawable */
+                100,100,true
+        );
         Paint mMaxPaint, mMinPaint, mDayPaint;
         GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext())
                 .addApi(Wearable.API)
@@ -297,7 +300,7 @@ public class WatchFace extends CanvasWatchFaceService {
             //canvas.drawText(Utility.getDateString(mCalendar.getTimeInMillis()), cx-90 + mDayPaint.measureText(dayString), mYOffset + 20,mDayPaint);
 
             canvas.drawText(mMax, cx-10, cy+75,mMaxPaint);
-            canvas.drawText(mMin, cx+mMaxPaint.measureText(mMax)/3+8, cy+105,mMinPaint);
+            canvas.drawText(mMin, cx+mMaxPaint.measureText(mMax)/3+10, cy+105,mMinPaint);
             if(mBitmap!= null && !mAmbient)
                 canvas.drawBitmap(mBitmap, cx-120, cy+10,null);
 

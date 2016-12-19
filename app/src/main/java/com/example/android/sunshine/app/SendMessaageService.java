@@ -48,7 +48,7 @@ public class SendMessaageService extends IntentService implements GoogleApiClien
 
         Log.d(TAG, "in sendMessage Service");
 
-        if(intent.getAction().equals(WEAR_ACTION)){
+
 
             mGoogleApiClient = new GoogleApiClient.Builder(SendMessaageService.this)
                     .addConnectionCallbacks(this)
@@ -57,7 +57,7 @@ public class SendMessaageService extends IntentService implements GoogleApiClien
                     .build();
 
             mGoogleApiClient.connect();
-        }
+
     }
 
     private Asset createAssetFromBitmap(Bitmap bitmap){
@@ -140,6 +140,6 @@ public class SendMessaageService extends IntentService implements GoogleApiClien
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // mGoogleApiClient.disconnect();
+       //mGoogleApiClient.disconnect();
     }
 }

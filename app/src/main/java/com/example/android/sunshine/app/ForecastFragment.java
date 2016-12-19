@@ -368,6 +368,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                     return false;
                 }
             });
+
+            getContext().startService(new Intent(getContext(), SendMessaageService.class));
         }
 
     }
